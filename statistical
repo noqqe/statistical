@@ -1,0 +1,104 @@
+#!/bin/bash
+# statistical: gernerate easy statistical informations in bash
+# Copyright: (C) 2011 Florian Baumann <flo@noqqe.de>
+# License: GPL-3 <http://www.gnu.org/licenses/gpl-3.0.txt>
+# Date: Tuesday 2011-04-12
+
+### Locales 
+SUM="$*"
+OUTPUTCHAR='#'
+COUNTER="0"
+BIGKEY=0
+
+# Read from stdin hack
+if [ -z "$*" ]; then
+    SUM=$(cat /dev/stdin)
+fi
+
+### Scaling and environment analysis for optimal output on 
+# the most terminals 
+for data in $SUM; do
+
+    # Getting informations from parameters
+    KEY=$(echo $data | awk -F: '{printf $1}')
+    VALUE=$(echo $data | awk -F: '{print $2}')
+    
+    # Fishing errors from wrong usage
+    if $(echo $VALUE | grep -q -v -P '^\d{1,}$'); then
+        echo "ERROR: Do not use characters as value! Key:$KEY"
+        exit 1
+    fi
+
+    # Doing the right formatting for a global 
+    # tabulator spaces work
+    if [ ${#KEY} -gt 15 ]; then 
+        BIGKEY=2
+    elif [ ${#KEY} -gt 7 ]; then 
+        BIGKEY=1
+    fi
+
+    # Function for doing the factor increase
+    factorincrease () {
+        if [ $1 -gt ${FACTOR:-0} ]; then
+            FACTOR=$1
+        fi
+    }
+
+    # Scaling for values. You can use values up to
+    # 1.000.000 without your terminal gets broken
+    if [ $VALUE -gt 1000000 ]; then 
+        factorincrease 100000 
+    elif [ $VALUE -gt 100000 ]; then 
+        factorincrease 10000 
+    elif [ $VALUE -gt 10000 ]; then 
+        factorincrease 1000
+    elif [ $VALUE -gt 1000 ]; then 
+        factorincrease 100 
+    elif [ $VALUE -gt 100 ]; then 
+        factorincrease 10
+    else
+        factorincrease 1
+    fi
+
+done 
+
+# Start graphing
+for data in $SUM; do
+
+    KEY=$(echo $data | awk -F: '{printf $1}')
+    VALUE=$(echo $data | awk -F: '{print $2}')
+
+    # Do scaling action for terminal
+    if [ ! -z ${BIGFLAG:-0} ]; then 
+        VALUE=$(($VALUE / $FACTOR))
+        if [ $VALUE -lt 1 ]; then
+            VALUE=1
+        fi
+    fi
+
+    # Writing the graph
+    if [ $BIGKEY -eq 2 -a ${#KEY} -lt 8 ]; then
+        echo -n -e "${KEY}\t\t\t"
+    elif [ $BIGKEY -eq 2 -a ${#KEY} -lt 15 ]; then
+        echo -n -e "${KEY}\t\t"
+    elif [ $BIGKEY -eq 1 -a ${#KEY} -lt 8 ]; then
+        echo -n -e "${KEY}\t\t"
+    else
+        echo -n -e "${KEY}\t"
+    fi
+
+    echo -n '|'
+    while [ $COUNTER -lt $VALUE ]; do
+        
+        ((COUNTER++))
+
+        echo -n "$OUTPUTCHAR"
+        
+        if [ $COUNTER -ge $VALUE ]; then
+            echo 
+        fi
+
+    done
+    COUNTER=0
+
+done
