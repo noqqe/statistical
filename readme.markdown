@@ -19,17 +19,18 @@ Maybe a some more complex example. There is a bit bash magic :) statistical can 
     $ for a in $(git shortlog -sn --all | cut -f2 | cut -f1 -d' '); do echo -n "$a:" ; git log $LOGOPTS --all --numstat --format="%n" --author=$a | cut -f3 | sort -iu | wc -l; done  | statistical
     Mark    |##################
     Robert    |#########################################################################
-    Florian  |##############
-    Jesus    |######
+    Florian   |##############
+    Jesus   |######
     John    |##############
     Rich    |########
-    Piotr    |###
+    Piotr   |###
     Travis    |####
-    Fedyashev   |##
-    zerobearing2|####
-    Andy      |###
+    Fedyashev |##
+    zerobearing2  |####
+    Andy    |###
     Daniel    |####
     Jeff    |##
     Karl    |##
+    Robert    |#########################################################################
     Sirupsen  |##
 
