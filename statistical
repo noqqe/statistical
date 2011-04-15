@@ -31,7 +31,9 @@ for data in $SUM; do
 
     # Doing the right formatting for a global 
     # tabulator spaces work
-    if [ ${#KEY} -gt 15 ]; then 
+    if [ ${#KEY} -gt 23 ]; then 
+        BIGKEY=3
+    elif [ ${#KEY} -gt 15 ]; then 
         BIGKEY=2
     elif [ ${#KEY} -gt 7 ]; then 
         BIGKEY=1
@@ -45,8 +47,12 @@ for data in $SUM; do
     }
 
     # Scaling for values. You can use values up to
-    # 1.000.000 without your terminal gets broken
-    if [ $VALUE -gt 1000000 ]; then 
+    # 100.000.000 without your terminal gets broken
+    if [ $VALUE -gt 100000000 ]; then 
+        factorincrease 10000000 
+    elif [ $VALUE -gt 10000000 ]; then 
+        factorincrease 1000000 
+    elif [ $VALUE -gt 1000000 ]; then 
         factorincrease 100000 
     elif [ $VALUE -gt 100000 ]; then 
         factorincrease 10000 
@@ -60,13 +66,15 @@ for data in $SUM; do
         factorincrease 1
     fi
 
-done 
+done
 
 # Start graphing
 for data in $SUM; do
 
     KEY=$(echo $data | awk -F: '{printf $1}')
+    REAL_KEY=$KEY
     VALUE=$(echo $data | awk -F: '{print $2}')
+    REAL_VALUE="$VALUE"
 
     # Do scaling action for terminal
     if [ ! -z ${BIGFLAG:-0} ]; then 
@@ -75,9 +83,20 @@ for data in $SUM; do
             VALUE=1
         fi
     fi
+    
+    # Do scaling action for terminal
+    if [ ${#KEY} -ge 23 ]; then 
+        KEY=${KEY:0:16}
+    fi
 
     # Writing the graph
-    if [ $BIGKEY -eq 2 -a ${#KEY} -lt 8 ]; then
+    if [ $BIGKEY -eq 3 -a ${#KEY} -lt 8 ]; then
+        echo -n -e "${KEY}\t\t\t\t"
+    elif [ $BIGKEY -eq 3 -a ${#KEY} -lt 15 ]; then
+        echo -n -e "${KEY}\t\t\t"
+    elif [ $BIGKEY -eq 3 -a ${#KEY} -lt 23 ]; then
+        echo -n -e "${KEY}\t\t"
+    elif [ $BIGKEY -eq 2 -a ${#KEY} -lt 8 ]; then
         echo -n -e "${KEY}\t\t\t"
     elif [ $BIGKEY -eq 2 -a ${#KEY} -lt 15 ]; then
         echo -n -e "${KEY}\t\t"
@@ -92,10 +111,11 @@ for data in $SUM; do
         
         ((COUNTER++))
 
-        echo -n "$OUTPUTCHAR"
         
         if [ $COUNTER -ge $VALUE ]; then
-            echo 
+            echo -n " (${REAL_VALUE:-0})" ; echo 
+        else 
+            echo -n "$OUTPUTCHAR"
         fi
 
     done
