@@ -20,11 +20,15 @@ fi
 for data in $SUM; do
 
     # Getting informations from parameters
-    KEY=$(echo $data | awk -F: '{printf $1}')
-    VALUE=$(echo $data | awk -F: '{print $2}')
-    
+    OIFS=$IFS
+    IFS=:
+    set -- $data
+    KEY=$1
+    VALUE=$2
+    IFS=$OIFS
+
     # Fishing errors from wrong usage
-    if $(echo $VALUE | grep -q -v -P '^\d{1,}$'); then
+    if [[ ! $VALUE =~ ^[[:digit:]]+$ ]]; then
         echo "ERROR: Do not use characters as value! Key:$KEY"
         exit 1
     fi
@@ -71,9 +75,13 @@ done
 # Start graphing
 for data in $SUM; do
 
-    KEY=$(echo $data | awk -F: '{printf $1}')
-    REAL_KEY=$KEY
-    VALUE=$(echo $data | awk -F: '{print $2}')
+    OIFS=$IFS
+    IFS=:
+    set -- $data
+    KEY=$1
+    VALUE=$2
+    IFS=$OIFS
+
     REAL_VALUE="$VALUE"
 
     # Do scaling action for terminal
