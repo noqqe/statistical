@@ -5,22 +5,16 @@
 # Date: Tuesday 2011-04-12
 
 ### Locales 
-SUM="$*"
-OUTPUTCHAR='#'
-BIGKEY=0
+SUM="$*"        # see all key value pairs
+OUTPUTCHAR='#'  # configure this to your favorite ascii char 
+BORDERCHAR='|'  # configure this to your favorite ascii char 
+BIGKEY=0        # usually you dont have to touch this 
 
 # Read from stdin hack
 if [ -z "$*" ]; then
     SUM=$(cat /dev/stdin)
 fi
     
-# Function for doing the factor increase
-factorincrease () {
-    if [ $1 -gt ${FACTOR:-0} ]; then
-        FACTOR=$1
-    fi
-}
-
 ### Scaling and environment analysis for optimal output on 
 # the most terminals 
 for data in $SUM; do
@@ -45,10 +39,12 @@ for data in $SUM; do
         BIGKEY=1
     fi
 
+    # Fishing the biggest value 
     (( VALUE > MAXVALUE )) && MAXVALUE=$VALUE
 
 done
 
+# Creating the right factor to fit the bars up to your terminal
 FACTORCOUNT=0
 FACTOR=1
 while [ ${FACTORCOUNT} -lt $(( ${#MAXVALUE} - 2 )) ]; do
@@ -62,19 +58,17 @@ for data in $SUM; do
     KEY=${data%%:*}
     VALUE=${data##*:}
     REAL_VALUE="$VALUE"
-
     COUNTER="0"
     
     # Do value scaling action for terminal
     VALUE=$(($VALUE / $FACTOR))
-    #[ $VALUE -lt 1 ] && VALUE=1 && EMPTY=1
     
     # Do key scaling action for terminal
     if [ ${#KEY} -ge 23 ]; then 
         KEY=${KEY:0:16}
     fi
 
-    # Writing the graph
+    # Formatting the keys for your graph
     if [ $BIGKEY -eq 3 -a ${#KEY} -lt 8 ]; then
         echo -n -e "${KEY}\t\t\t\t"
     elif [ $BIGKEY -eq 3 -a ${#KEY} -lt 15 ]; then
@@ -91,7 +85,11 @@ for data in $SUM; do
         echo -n -e "${KEY}\t"
     fi
 
-    echo -n '|'
+    # Putting the choosen char for border
+    echo -n "$BORDERCHAR"
+
+    # Putting a output char for each (scaled) value 
+    # If the last char was written, write the real value
     while [ $COUNTER -le $VALUE ]; do
         
         ((COUNTER++))
