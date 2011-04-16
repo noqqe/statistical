@@ -65,7 +65,7 @@ for data in $SUM; do
     
     # Do key scaling action for terminal
     if [ ${#KEY} -ge 23 ]; then 
-        KEY=${KEY:0:16}
+        KEY=${KEY:0:22}
     fi
 
     # Formatting the keys for your graph
