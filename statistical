@@ -20,12 +20,8 @@ fi
 for data in $SUM; do
 
     # Getting informations from parameters
-    OIFS=$IFS
-    IFS=:
-    set -- $data
-    KEY=$1
-    VALUE=$2
-    IFS=$OIFS
+    KEY=${data%%:*}
+    VALUE=${data##*:}
 
     # Fishing errors from wrong usage
     if [[ ! $VALUE =~ ^[[:digit:]]+$ ]]; then
@@ -75,13 +71,8 @@ done
 # Start graphing
 for data in $SUM; do
 
-    OIFS=$IFS
-    IFS=:
-    set -- $data
-    KEY=$1
-    VALUE=$2
-    IFS=$OIFS
-
+    KEY=${data%%:*}
+    VALUE=${data##*:}
     REAL_VALUE="$VALUE"
 
     # Do scaling action for terminal
