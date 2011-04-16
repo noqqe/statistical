@@ -45,26 +45,15 @@ for data in $SUM; do
         BIGKEY=1
     fi
 
-    # Scaling for values. You can use values up to
-    # 100.000.000 without your terminal gets broken
-    if [ $VALUE -gt 100000000 ]; then 
-        factorincrease 10000000 
-    elif [ $VALUE -gt 10000000 ]; then 
-        factorincrease 1000000 
-    elif [ $VALUE -gt 1000000 ]; then 
-        factorincrease 100000 
-    elif [ $VALUE -gt 100000 ]; then 
-        factorincrease 10000 
-    elif [ $VALUE -gt 10000 ]; then 
-        factorincrease 1000
-    elif [ $VALUE -gt 1000 ]; then 
-        factorincrease 100 
-    elif [ $VALUE -gt 100 ]; then 
-        factorincrease 10
-    else
-        factorincrease 1
-    fi
+    (( VALUE > MAXVALUE )) && MAXVALUE=$VALUE
 
+done
+
+FACTORCOUNT=0
+FACTOR=1
+while [ ${FACTORCOUNT} -lt $(( ${#MAXVALUE} - 2 )) ]; do
+    FACTOR="${FACTOR}0"
+    ((FACTORCOUNT++))
 done
 
 # Start graphing
@@ -76,15 +65,11 @@ for data in $SUM; do
 
     COUNTER="0"
     
-    # Do scaling action for terminal
-    if [ ! -z ${BIGFLAG:-0} ]; then 
-        VALUE=$(($VALUE / $FACTOR))
-        if [ $VALUE -lt 1 ]; then
-            VALUE=1
-        fi
-    fi
+    # Do value scaling action for terminal
+    VALUE=$(($VALUE / $FACTOR))
+    #[ $VALUE -lt 1 ] && VALUE=1 && EMPTY=1
     
-    # Do scaling action for terminal
+    # Do key scaling action for terminal
     if [ ${#KEY} -ge 23 ]; then 
         KEY=${KEY:0:16}
     fi
@@ -107,12 +92,12 @@ for data in $SUM; do
     fi
 
     echo -n '|'
-    while [ $COUNTER -lt $VALUE ]; do
+    while [ $COUNTER -le $VALUE ]; do
         
         ((COUNTER++))
         
-        if [ $COUNTER -ge $VALUE ]; then
-            echo -n " (${REAL_VALUE:-0})" ; echo 
+        if [ $COUNTER -gt $VALUE ]; then
+            echo -n " ($REAL_VALUE)" ; echo 
         else 
             echo -n "$OUTPUTCHAR"
         fi
