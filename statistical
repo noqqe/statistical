@@ -7,7 +7,6 @@
 ### Locales 
 SUM="$*"
 OUTPUTCHAR='#'
-COUNTER="0"
 BIGKEY=0
 
 # Read from stdin hack
@@ -75,6 +74,8 @@ for data in $SUM; do
     VALUE=${data##*:}
     REAL_VALUE="$VALUE"
 
+    COUNTER="0"
+    
     # Do scaling action for terminal
     if [ ! -z ${BIGFLAG:-0} ]; then 
         VALUE=$(($VALUE / $FACTOR))
@@ -117,6 +118,4 @@ for data in $SUM; do
         fi
 
     done
-    COUNTER=0
-
 done
