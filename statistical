@@ -14,6 +14,13 @@ BIGKEY=0
 if [ -z "$*" ]; then
     SUM=$(cat /dev/stdin)
 fi
+    
+# Function for doing the factor increase
+factorincrease () {
+    if [ $1 -gt ${FACTOR:-0} ]; then
+        FACTOR=$1
+    fi
+}
 
 ### Scaling and environment analysis for optimal output on 
 # the most terminals 
@@ -42,13 +49,6 @@ for data in $SUM; do
     elif [ ${#KEY} -gt 7 ]; then 
         BIGKEY=1
     fi
-
-    # Function for doing the factor increase
-    factorincrease () {
-        if [ $1 -gt ${FACTOR:-0} ]; then
-            FACTOR=$1
-        fi
-    }
 
     # Scaling for values. You can use values up to
     # 100.000.000 without your terminal gets broken
@@ -118,7 +118,6 @@ for data in $SUM; do
     while [ $COUNTER -lt $VALUE ]; do
         
         ((COUNTER++))
-
         
         if [ $COUNTER -ge $VALUE ]; then
             echo -n " (${REAL_VALUE:-0})" ; echo 
