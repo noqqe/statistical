@@ -29,6 +29,14 @@ for data in $SUM; do
         exit 1
     fi
 
+    # Bash couldn't handle values with more than 19 numbers
+    # Values longer than 19 will be transformed into strings.
+    # String could not be graphed :) 
+    if [[ ${#VALUE} -gt 19 ]]; then 
+        echo "Error: Bash couldn't handle values with more than 19 numbers. Sorry."
+        exit 1
+    fi
+
     # Doing the right formatting for a global 
     # tabulator spaces work
     if [ ${#KEY} -gt 23 ]; then 
