@@ -25,7 +25,7 @@ for data in $SUM; do
 
     # Fishing errors from wrong usage
     if [[ ! $VALUE =~ ^[[:digit:]]+$ ]]; then
-        echo "ERROR: Do not use characters as value! Key:$KEY"
+        echo "ERROR: Do not use characters as value! Key:$KEY Value:$VALUE"
         exit 1
     fi
 
