@@ -1,0 +1,129 @@
+#!/bin/bash
+# statistical: gernerate easy statistical informations in bash
+# Copyright: (C) 2011 Florian Baumann <flo@noqqe.de>
+# License: GPL-3 <http://www.gnu.org/licenses/gpl-3.0.txt>
+# Date: Tuesday 2011-04-12
+
+### Locales 
+SUM="$*"        # see all key value pairs
+OUTPUTCHAR='#'  # configure this to your favorite ascii char 
+BORDERCHAR='|'  # configure this to your favorite ascii char 
+BOTTOMCHAR='='
+
+# Read from stdin hack
+if [ -z "$*" ]; then
+    SUM=$(cat /dev/stdin)
+fi
+    
+### Scaling and environment analysis for optimal output on 
+# the most terminals 
+for data in $SUM; do
+
+    # Getting informations from parameters
+    KEY=${data%%:*}
+    VALUE=${data##*:}
+
+    # Fishing errors from wrong usage
+    if [[ ! $VALUE =~ ^[[:digit:]]+$ ]]; then
+        echo "ERROR: Do not use characters as value! Key:$KEY Value:$VALUE"
+        exit 1
+    fi
+
+    # Bash couldn't handle values with more than 19 numbers
+    # Values longer than 19 will be transformed into strings.
+    # String could not be graphed :) 
+    if [[ ${#VALUE} -gt 19 ]]; then 
+        echo "Error: Bash couldn't handle values with more than 19 numbers. Sorry."
+        exit 1
+    fi
+
+    # Fishing the biggest value 
+    (( VALUE > MAXVALUE )) && MAXVALUE=$VALUE
+
+done
+
+# Scaling action
+FACTORCOUNT=0
+if [ ${MAXVALUE:0:1} -gt 7 ] && [ ${#MAXVALUE} -gt 1 ]; then
+    FACTOR=3
+elif [ ${MAXVALUE:0:1} -gt 2 ] && [ ${#MAXVALUE} -gt 1 ]; then
+    FACTOR=2
+else
+    FACTOR=1
+fi
+while [ ${FACTORCOUNT} -lt $(( ${#MAXVALUE} - 2 )) ]; do
+    FACTOR="${FACTOR}0"
+    ((FACTORCOUNT++))
+done
+
+# Start graphing
+COUNTER="$(($MAXVALUE / $FACTOR))"
+while [ $COUNTER -gt 0 ]; do
+
+    # Print (scaled) number and limiter
+    SIGNC=$(($COUNTER * $FACTOR))
+    while [ ${#SIGNC} -lt ${#MAXVALUE} ]; do
+        SIGNC=" $SIGNC"
+    done
+    echo -n "$SIGNC $BORDERCHAR"
+
+    # Looping all data sets for each Step (downwards)
+    for data in $SUM ; do 
+        
+        # Parsing data
+        KEY=${data%%:*}
+        VALUE=${data##*:}
+        VALUE=$(($VALUE / $FACTOR))
+
+        # If number equal or less the actual counter print a char
+        if [ $COUNTER -le $VALUE ]; then
+            echo -n "${OUTPUTCHAR}${OUTPUTCHAR}${OUTPUTCHAR} "
+        else    
+            echo -n "    "
+        fi
+
+    done
+
+    # Round ends, do next (scaled) round
+    ((COUNTER--))
+    echo
+
+    # Bulding bottom lines
+    if [ $COUNTER -le 0 ]; then
+
+        # Bottom of Graph
+        SPACEC=0
+        while [ $SPACEC -le ${#MAXVALUE} ]; do
+            echo -n " "
+            ((SPACEC++))
+        done
+        echo -n "$BORDERCHAR"
+        for name in $SUM; do 
+            echo -n "${BOTTOMCHAR}${BOTTOMCHAR}${BOTTOMCHAR}${BOTTOMCHAR}"
+        done
+        echo 
+
+        # Key names
+        SPACEC=0
+        while [ $SPACEC -le ${#MAXVALUE} ]; do
+            echo -n " "
+            ((SPACEC++))
+        done
+        echo -n " "
+        for name in $SUM; do
+            KEY=${name%%:*}
+
+            # Do key scaling action for terminal
+            if [ ${#KEY} -ge 4 ]; then 
+                KEY=${KEY:0:3}
+            elif [ ${#KEY} -eq 2 ]; then
+                echo -n "$KEY  "
+            elif [ ${#KEY} -eq 1 ]; then
+                echo -n "$KEY   "
+            else
+                echo -n "$KEY "
+            fi
+        done
+        echo 
+    fi
+done
