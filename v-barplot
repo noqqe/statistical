@@ -113,6 +113,9 @@ while [ $COUNTER -gt 0 ]; do
         for name in $SUM; do
             KEY=${name%%:*}
 
+            if [ ${#KEY} -ge 4 ]; then 
+                KEY=${KEY:0:3}
+            fi
             # Do key scaling action for terminal
             if [ ${#KEY} -ge 4 ]; then 
                 KEY=${KEY:0:3}
