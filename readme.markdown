@@ -78,3 +78,8 @@ The new v-barplot script does the same as h-barplot. It includes scaling for you
      3 |### ### ### ### 
        |================
         foo bar ali bob 
+
+
+## showterm.io Example
+
+[showterm.io/0d0f510cb43b206350679](http://showterm.io/0d0f510cb43b206350679#fast)
