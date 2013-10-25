@@ -20,26 +20,20 @@ add key:value pairs as parameters and watch the generic statistical graph.
 
 Maybe a some more complex example. There is a bit bash magic :) statistical can read from stdin as well. So you can just pipe some formated informations into it like:
 
-    $ cd ~/Projects/bash-it
+    $ cd ~/Projects/githug
     $ for a in $(git shortlog -sn --all | cut -f2 | cut -f1 -d' '); do echo -n \
     "$a:" ; git log $LOGOPTS --all --numstat --format="%n" --author=$a | cut -f3 \
     | sort -iu | wc -l; done  | h-barplot 
-    Mark          |##################
-    Robert        |#########################################################################
-    Florian       |##############
-    Jesus         |######
-    John          |##############
-    Rich          |########
-    Piotr         |###
-    Travis        |####
-    Fedyashev     |##
-    zerobearing2  |####
-    Andy          |###
-    Daniel        |####
-    Jeff          |##
-    Karl          |##
-    Robert        |#########################################################################
-    Sirupsen      |##
+    Gary      |###################### (226)
+    Robert    |## (22)
+    Dustin    |### (33)
+    Thameera  |### (37)
+    Anton     |## (26)
+    Al        |## (25)
+    Andrey    |#### (49)
+    mcramm    |#### (40)
+    wjk       | (2)
+
 
 ## v-barplot Examples
 
